@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -47,7 +49,21 @@ public class ModeloMySQL implements Modelo {
 
     @Override
     public int addAlumno(Alumno alumno) {
-        throw new UnsupportedOperationException("No soportado aún...");
+        try {
+            int cantRegsAfectados;
+            String sql = "INSERT INTO alumnos VALUES (null, ?, ?, ?, ?, ?)";
+            Connection con = Conexion.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, alumno.getNombre());
+            ps.setString(2, alumno.getApellido());
+            ps.setString(3, alumno.getMail());
+            ps.setString(4, alumno.getFechaNacimiento());
+            ps.setString(5, alumno.getFoto());
+            cantRegsAfectados = ps.executeUpdate();
+            return cantRegsAfectados;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error al crear alumno en MySQL", ex);
+        }
     }
 
     @Override
