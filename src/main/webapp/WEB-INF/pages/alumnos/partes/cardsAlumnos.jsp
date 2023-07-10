@@ -12,7 +12,7 @@
                         <a href="PENDIENTE" class="btn bg-info w-100"><i class="bi bi-eye"></i></a>
                     </div>
                     <div class="col-4">
-                        <a href="PENDIENTE" class="btn bg-warning w-100"><i class="bi bi-pencil"></i></a>
+                        <a href="${pageContext.request.contextPath}/app?accion=editar&id=${alumno.id}" class="btn bg-warning w-100"><i class="bi bi-pencil"></i></a>
                     </div>
                     <div class="col-4">
                         <a href="PENDIENTE" class="btn bg-danger text-light w-100"><i class="bi bi-trash3"></i></a>

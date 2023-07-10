@@ -5,7 +5,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Agregar alumno</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="formAgregarAlumno" action="${pageContext.request.contextPath}/app"
+            <form id="formAgregarAlumno" action="${pageContext.request.contextPath}/app?accion=insert"
                   method="post" class="was-validated">
                 <div class="modal-body">
                     <div class="row">

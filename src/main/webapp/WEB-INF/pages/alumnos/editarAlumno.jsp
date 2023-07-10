@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="col-md-7 col-lg-8" >
-            <form id="formAgregarAlumno" action="PENDIENTE"
+            <form id="formAgregarAlumno" action="${pageContext.request.contextPath}/app?accion=update&id=${alumnoAEditar.id}"
                   method="post" class="was-validated border p-4 rounded-3 bg-light">
                 <div class="row">
                     <div class="col-sm-6 mb-3">

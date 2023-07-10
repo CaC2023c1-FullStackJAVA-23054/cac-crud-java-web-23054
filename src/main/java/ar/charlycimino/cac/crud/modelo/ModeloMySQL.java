@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,13 +24,7 @@ public class ModeloMySQL implements Modelo {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                String mail = rs.getString("mail");
-                String fechaNac = rs.getString("fechaNac");
-                String fotoBase64 = rs.getString("fotoBase64");
-                alumnos.add(new Alumno(id, nombre, apellido, mail, fechaNac, fotoBase64));
+                alumnos.add(rsToAlumno(rs));
             }
 
             return alumnos;
@@ -44,7 +36,18 @@ public class ModeloMySQL implements Modelo {
 
     @Override
     public Alumno getAlumno(int id) {
-        throw new UnsupportedOperationException("No soportado aún...");
+        try {
+            Alumno alu = null;
+            Connection con = Conexion.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM alumnos WHERE id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            alu = rsToAlumno(rs);
+            return alu;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error al leer alumno con id " + id + " de MySQL", ex);
+        }
     }
 
     @Override
@@ -54,11 +57,7 @@ public class ModeloMySQL implements Modelo {
             String sql = "INSERT INTO alumnos VALUES (null, ?, ?, ?, ?, ?)";
             Connection con = Conexion.getConnection();
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, alumno.getNombre());
-            ps.setString(2, alumno.getApellido());
-            ps.setString(3, alumno.getMail());
-            ps.setString(4, alumno.getFechaNacimiento());
-            ps.setString(5, alumno.getFoto());
+            fillPreparedStatement(ps, alumno);
             cantRegsAfectados = ps.executeUpdate();
             return cantRegsAfectados;
         } catch (SQLException ex) {
@@ -68,7 +67,18 @@ public class ModeloMySQL implements Modelo {
 
     @Override
     public int updateAlumno(Alumno alumno) {
-        throw new UnsupportedOperationException("No soportado aún...");
+        try {
+            int cantRegsAfectados;
+            String sql = "UPDATE alumnos SET nombre=?, apellido=?, mail=?, fechaNac=?, fotoBase64=? WHERE id=?";
+            Connection con = Conexion.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            fillPreparedStatement(ps, alumno);
+            ps.setInt(6, alumno.getId());
+            cantRegsAfectados = ps.executeUpdate();
+            return cantRegsAfectados;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Error al editar alumno en MySQL", ex);
+        }
     }
 
     @Override
@@ -76,4 +86,21 @@ public class ModeloMySQL implements Modelo {
         throw new UnsupportedOperationException("No soportado aún...");
     }
 
+    private Alumno rsToAlumno(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String nombre = rs.getString("nombre");
+        String apellido = rs.getString("apellido");
+        String mail = rs.getString("mail");
+        String fechaNac = rs.getString("fechaNac");
+        String fotoBase64 = rs.getString("fotoBase64");
+        return new Alumno(id, nombre, apellido, mail, fechaNac, fotoBase64);
+    }
+
+    private void fillPreparedStatement(PreparedStatement ps, Alumno alumno) throws SQLException {
+        ps.setString(1, alumno.getNombre());
+        ps.setString(2, alumno.getApellido());
+        ps.setString(3, alumno.getMail());
+        ps.setString(4, alumno.getFechaNacimiento());
+        ps.setString(5, alumno.getFoto());
+    }
 }
