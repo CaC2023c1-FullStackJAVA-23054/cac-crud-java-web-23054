@@ -1,5 +1,5 @@
 <jsp:include page="WEB-INF/pages/comunes/inicioHTML.jsp">
-    <jsp:param name="elTitulo" value="No encontrado" />
+    <jsp:param name="Error 404" value="No encontrado" />
 </jsp:include>
 
 <jsp:include page="WEB-INF/pages/comunes/navbar.jsp" />

@@ -23,6 +23,7 @@ public class AppServlet extends HttpServlet {
     private Modelo model;
     private final String URI_LIST = "WEB-INF/pages/alumnos/listadoAlumnos.jsp";
     private final String URI_EDIT = "WEB-INF/pages/alumnos/editarAlumno.jsp";
+    private final String URI_REMOVE = "WEB-INF/pages/alumnos/borrarAlumno.jsp";
 
     @Override
     public void init() throws ServletException {
@@ -31,15 +32,23 @@ public class AppServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int id;
+        Alumno alu;
         String accion = req.getParameter("accion");
         accion = accion == null ? "" : accion;
         switch (accion) {
             case "editar":
-                int id = Integer.parseInt(req.getParameter("id"));
-                Alumno alu = model.getAlumno(id);
+                id = Integer.parseInt(req.getParameter("id"));
+                alu = model.getAlumno(id);
                 req.setAttribute("alumnoAEditar", alu);
                 req.setAttribute("yaTieneFoto", !alu.getFoto().contains("no-face"));
                 req.getRequestDispatcher(URI_EDIT).forward(req, resp);
+                break;
+            case "borrar":
+                id = Integer.parseInt(req.getParameter("id"));
+                alu = model.getAlumno(id);
+                req.setAttribute("alumnoABorrar", alu);
+                req.getRequestDispatcher(URI_REMOVE).forward(req, resp);
                 break;
             default:
                 req.setAttribute("listaAlumnos", model.getAlumnos());
@@ -51,6 +60,7 @@ public class AppServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Alumno alu;
+        int id;
         String accion = req.getParameter("accion");
         accion = accion == null ? "" : accion;
         switch (accion) {
@@ -59,10 +69,14 @@ public class AppServlet extends HttpServlet {
                 model.addAlumno(alu);
                 break;
             case "update":
-                int id = Integer.parseInt(req.getParameter("id"));
+                id = Integer.parseInt(req.getParameter("id"));
                 alu = getAlumnoSegunParams(req);
                 alu.setId(id);
                 model.updateAlumno(alu);
+                break;
+            case "delete":
+                id = Integer.parseInt(req.getParameter("id"));
+                model.removeAlumno(id);
                 break;
         }
         resp.sendRedirect(getServletContext().getContextPath() + "/app");
